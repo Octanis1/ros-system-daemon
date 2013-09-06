@@ -44,9 +44,9 @@ if [ -s /etc/ros/setup.bash ]; then
 elif ! [ -z "$ROS_DISTRO" ]; then
     echo "$DATE: rosctl using setup file /opt/ros/$ROS_DISTRO/setup.bash"
     source /opt/ros/$ROS_DISTRO/setup.bash
-elif [ -s /opt/ros/groovy/setup.bash ]; then
-    echo "$DATE: rosctl using setup file /opt/ros/groovy/setup.bash"
-    source /opt/ros/groovy/setup.bash
+elif [ -s /opt/ros/hydro/setup.bash ]; then
+    echo "$DATE: rosctl using setup file /opt/ros/hydro/setup.bash"
+    source /opt/ros/hydro/setup.bash
 else
     echo "$DATE: rosctl can not locate setup.bash"
     exit 1

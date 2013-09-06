@@ -1,4 +1,4 @@
-# ROS system daemon for Groovy
+# ROS system daemon for Hydro
 This package provides functionality for automatically starting/stopping ROS
 
 ## ROS System User
@@ -21,12 +21,12 @@ Startup and shutdown is controlled by an upstart script that can be auto-configu
 Future work will resolve the issue where ROS starts connected to *eth0* and the machine is also equipped with a WiFi interface. In this case the state of the WiFi device should not produce a stop/start event effecting ROS.
 
 For this we plan to separate the upstart scripts into two packages
-* *ros-system-upstart-lan-groovy*
-* *ros-system-upstart-wan-groovy*  
+* *ros-system-upstart-lan-hydro*
+* *ros-system-upstart-wan-hydro*  
 
-These packages will provide *ros-system-upstart-groovy* for dependency management.
+These packages will provide *ros-system-upstart-hydro* for dependency management.
 
-### ros-system-daemon-groovy.ros.upstart
+### ros-system-daemon-hydro.ros.upstart
 * Config file ```/etc/init/ros.conf```
 * ```start on net-device-up IFACE!=lo```
 * ```stop on platform-device-changed```
@@ -40,7 +40,7 @@ These packages will provide *ros-system-upstart-groovy* for dependency managemen
     chown -R ros:ros /var/log/ros
     chmod 2775 /var/log/ros
 
-### ros-system-daemon-groovy.ros.logrotate
+### ros-system-daemon-hydro.ros.logrotate
 * Config file ```/etc/logrotate.d/ros```
 * Rotate logs daily *.log -> *.log.1 -> *.log.2 -> etc
 * Compress the previous days logs daily *.log.2 -> *.log.2.gz
@@ -60,7 +60,7 @@ locally by users or system-wide by user *ros*.
 The script will attempt to source configuration files as follows
 * ```/etc/ros/setup.bash```
 * ```/opt/ros/$ROS_DISTRO/setup.bash```
-* ```/opt/ros/groovy/setup.bash```
+* ```/opt/ros/hydro/setup.bash```
 
 If ```rosctl``` is run as user *ros* it will attempt to launch ```/etc/ros/robot.launch``` or the launch file specified in ```ROS_LAUNCH``` if it exists.
 

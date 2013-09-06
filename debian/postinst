@@ -9,6 +9,7 @@ case "$1" in
             --no-create-home --home=/var/lib/ros --shell /bin/sh \
             --gecos "ROS system user" --group ros
           adduser --quiet ros dialout
+          # FIXME: remove user on uninstall
         fi
 	if ! getent group ros > /dev/null 2>&1; then
 		addgroup --system ros --quiet

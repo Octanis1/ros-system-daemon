@@ -2,7 +2,7 @@
     # Run scripts once per set of logs
     sharedscripts
     firstaction
-        . /opt/ros/groovy/setup.sh
+        . /opt/ros/hydro/setup.sh
         # get run_id of ROS if it is running
         RUN_ID=`rosparam get /run_id 2>/dev/null`
         # Create a tarball if ROS is no longer using a given log subdirectory
@@ -13,7 +13,7 @@
         done
     endscript
     postrotate
-        . /opt/ros/groovy/setup.sh
+        . /opt/ros/hydro/setup.sh
         RUN_ID=`rosparam get /run_id 2>/dev/null`
         # Remove log subdirectory after tarball has been created
         for i in $( ls /var/log/ros | grep -v \.gz$ ); do
