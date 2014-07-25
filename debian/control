@@ -1,18 +1,17 @@
-Source: ros-system-daemon-hydro
+Source: ros-system-daemon
 Section: science
 Priority: extra
-Maintainer: I Heart Engineering <code@iheartengineering.com>
+Maintainer: Mike Purvis <mpurvis@clearpathrobotics.com>
 Build-Depends: debhelper (>= 5), cdbs
 Standards-Version: 3.9.3
-Homepage: https://github.com/turtlebot-mfg/ros-system-daemon-hydro
+Homepage: https://github.com/mikepurvis/ros-system-daemon
 
-Package: ros-system-daemon-hydro
+Package: ros-system-daemon
 Architecture: all
-Depends: ${misc:Depends}, python, daemontools, build-essential, ros-hydro-ros, ros-hydro-ros-comm, adduser
+Depends: ${misc:Depends}, python, build-essential, adduser
 Provides: ros-system-daemon
-Description: ROS Hydro system daemon
- This package will start ROS at bootup
+Description: ROS system daemon
+ This package starts ROS at startup
  .
  Run ROS as user ros and group ros
-Conflicts: ros-system-daemon,ros-system-daemon-groovy,ros-system-daemon-fuerte,ros-system-daemon-electric
-Wg-Rosdistro: hydro
+Conflicts: ros-system-daemon-hydro,ros-system-daemon-groovy,ros-system-daemon-fuerte,ros-system-daemon-electric

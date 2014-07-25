@@ -37,34 +37,36 @@ DATE=`date`
 NOTIFY_USER=`ps -C gnome-session --no-headers -o user | head -1`
 USER=`id -un`
 
-# Load Config
-if [ -s /etc/ros/setup.bash ]; then
-    echo "$DATE: rosctl using setup file /etc/ros/setup.bash"
-    source /etc/ros/setup.bash
-elif ! [ -z "$ROS_DISTRO" ]; then
-    echo "$DATE: rosctl using setup file /opt/ros/$ROS_DISTRO/setup.bash"
-    source /opt/ros/$ROS_DISTRO/setup.bash
-elif [ -s /opt/ros/hydro/setup.bash ]; then
-    echo "$DATE: rosctl using setup file /opt/ros/hydro/setup.bash"
-    source /opt/ros/hydro/setup.bash
-else
-    echo "$DATE: rosctl can not locate setup.bash"
-    exit 1
-fi
-
 # Load Environmental Varibles
 ROS_ENVVARS="/etc/ros/envvars"
 if [ -f $ROS_ENVVARS ]; then
   . $ROS_ENVVARS
 fi
 
-####
-# ENVVARS
-####
-# ROS_PORT
-# ROS_LAUNCH
-# ROS_PID
+if [ -z "$ROS_DISTRO" ]; then
+  if [ -d "/opt/ros" ]; then
+    ROS_DISTRO=$(ls /opt/ros -1 | tail -n 1)
+  fi
+fi
 
+# Load Config. In order, we try:
+#  - setup file named by $ROS_SETUP environment variable.
+#  - setup file named by debconf setting (coming soon!)
+#  - /etc/ros/setup.bash
+#  - /opt/ros/$ROS_DISTRO/setup.bash
+if [ ! -z "$ROS_SETUP" ] && [ -s $ROS_SETUP ]; then
+    echo "$DATE: rosctl using setup file $ROS_SETUP"
+    source $ROS_SETUP
+elif [ -s /etc/ros/setup.bash ]; then
+    echo "$DATE: rosctl using setup file /etc/ros/setup.bash"
+    source /etc/ros/setup.bash
+elif [ ! -z "$ROS_DISTRO" ]; then
+    echo "$DATE: rosctl using setup file /opt/ros/$ROS_DISTRO/setup.bash"
+    source /opt/ros/$ROS_DISTRO/setup.bash
+else
+    echo "$DATE: rosctl can not locate setup.bash"
+    exit 1
+fi
 
 rosctl_usage () {
     echo "Usage: $0 start|stop|restart|status"
