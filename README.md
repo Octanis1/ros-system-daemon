@@ -1,5 +1,6 @@
-# ROS system daemon for Hydro
-This package provides functionality for automatically starting/stopping ROS
+# ros-system-daemon
+This package provides functionality for automatically starting and stopping ROS, including a facility for re-launching
+the daemon job as your own user.
 
 ## ROS System User
     Username:           ros
@@ -7,7 +8,7 @@ This package provides functionality for automatically starting/stopping ROS
     Group:              ros
     Shell:              /bin/sh
 
-*ros* should be a member of group *dialout* to access serial ports.
+*ros* should be a member of group *dialout* in order to access serial ports.
 
 ```chown -R ros:ros /var/lib/ros```  
 ```chmod 2775 /var/lib/ros```
@@ -16,31 +17,19 @@ This package provides functionality for automatically starting/stopping ROS
     ROS PID:            /var/run/ros/roscore.pid
 
 ## Startup and shutdown
-Startup and shutdown is controlled by an upstart script that can be auto-configured via D-Bus communication with Network Manager. It also supports manual overrides by setting ```ROS_IP``` and ```ROS_INTERFACE``` in ```/etc/ros/setup.bash``` or ```/etc/ros/envvars```. ROS is started when upstart receives a *net-device-up* signal and it is stopped when a network interface stops.
+Startup and shutdown is controlled by an upstart job. By default, ROS is launched as user `ros` with the following setup:
 
-Future work will resolve the issue where ROS starts connected to *eth0* and the machine is also equipped with a WiFi interface. In this case the state of the WiFi device should not produce a stop/start event effecting ROS.
-
-For this we plan to separate the upstart scripts into two packages
-* *ros-system-upstart-lan-hydro*
-* *ros-system-upstart-wan-hydro*  
-
-These packages will provide *ros-system-upstart-hydro* for dependency management.
-
-### ros-system-daemon-hydro.ros.upstart
-* Config file ```/etc/init/ros.conf```
-* ```start on net-device-up IFACE!=lo```
-* ```stop on platform-device-changed```
-* Check/update ownership & permissions of ```/var/run/ros```
-* Autoconf network ```ROS_IP=`ros-network ip````
-* Start via 'setuidgid ros rosctl start'
-* Stop via 'setuidgid ros rosctl stop'
+    source /etc/ros/setup.bash
+    source /etc/ros/envvars
+    export ROS_HOSTNAME=${HOSTNAME}
+    roslaunch /etc/ros/robot.launch
 
 ## System-wide Logging
     Log Dir:            /var/log/ros
     chown -R ros:ros /var/log/ros
     chmod 2775 /var/log/ros
 
-### ros-system-daemon-hydro.ros.logrotate
+### ros-system-daemon.ros.logrotate
 * Config file ```/etc/logrotate.d/ros```
 * Rotate logs daily *.log -> *.log.1 -> *.log.2 -> etc
 * Compress the previous days logs daily *.log.2 -> *.log.2.gz
@@ -49,18 +38,13 @@ These packages will provide *ros-system-upstart-hydro* for dependency management
 * Remove archived logs older than one week
 * Rotation currently done by copying and truncating the active log
 
-Note: 01 Jan 2013 Sending SIGHUP to the ROS does not cause it to write to a new log.  
+Note: 01 Jan 2013 Sending SIGHUP to ROS does not cause it to write to a new log.  
 <https://github.com/ros/ros_comm/issues/45>
 
 ## Files
 ### /usr/sbin/rosctl
 Modelled after ```apachectl```, this script allows ros to be started
 locally by users or system-wide by user *ros*.
-
-The script will attempt to source configuration files as follows
-* ```/etc/ros/setup.bash```
-* ```/opt/ros/$ROS_DISTRO/setup.bash```
-* ```/opt/ros/hydro/setup.bash```
 
 If ```rosctl``` is run as user *ros* it will attempt to launch ```/etc/ros/robot.launch``` or the launch file specified in ```ROS_LAUNCH``` if it exists.
 
@@ -76,22 +60,11 @@ Sub-commands
 
 In the near future running this as script as root will check/repair directory permissions and re-run itself setuidgid ros. Also, when run as root it should issue a warning and run ```initctl stop ros``` to prevent upstart from respawning. It may also be worth issuing a warning when run as *ros* and ```initctl status ros``` shows that upstart will respawn the process.
 
-### /usr/sbin/ros-network
-This tool autodetects network settings by querying NetworkManager via D-Bus. Autoconf can be overridden by setting ```ROS_IP``` and ```ROS_INTERFACE```.
-
-Sub-commands
-* interface - Outputs the primary interface name (wlan0, eth0, etc)
-* ip - Outputs the ipv4 address of the primary network connection
-* ssid - If WiFi connection, provide ssid of access point
-
-In the event of autoconf failure, the script returns ```lo``` for the interface name and ```127.0.0.1``` for the ip address.
-
-Eventually we would like this tool to be able to provide an automatic configuration of the ```ROS_MASTER_URI``` when a user logs in.
-
 ### /etc/ros/envvars
-The idea behind using this instead of modifying setup.ash is that if the file only contains environmental variables it can be parsed and edited by hardware vendor install scripts.
+The intent is that may be parsed and edited by hardware vendor install scripts; a place to put customizations which does not require editing setup.bash.
 
 ## Special Thanks
 The program ```rosctl``` was inspired by ```apachectl```
 Package was influenced by the alternate approach used by
-Thomas Moulard <thomas.moulard@gmail.com> on ros_comm_upstart
+Thomas Moulard on ros_comm_upstart
+Bill Morris on Turtlebot-Mfg
