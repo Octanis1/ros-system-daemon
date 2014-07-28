@@ -102,11 +102,7 @@ rosctl_start () {
         exit 1
     fi
 
-    #ROS_IP=`ros-network ip`
-    if [ -z $ROS_IP ]; then
-        ROS_IP="127.0.0.1"
-    fi
-    echo "$DATE: rosctl using ROS_IP={$ROS_IP:-Unknown}" >> $log_file
+    echo "$DATE: rosctl using ROS_HOSTNAME={$HOSTNAME}" >> $log_file
 
     rosctl_notify "Starting robot on $ROS_IP as $USER"
     echo "Starting robot on $ROS_IP as $USER"
