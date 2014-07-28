@@ -8,7 +8,7 @@ Homepage: https://github.com/mikepurvis/ros-system-daemon
 
 Package: ros-system-daemon
 Architecture: all
-Depends: ${misc:Depends}, python, build-essential, adduser
+Depends: ${misc:Depends}, python, build-essential, adduser, ros-indigo-ros-base | ros-hydro-ros-base | ros-groovy-ros-base
 Provides: ros-system-daemon
 Description: ROS system daemon
  This package starts ROS at startup

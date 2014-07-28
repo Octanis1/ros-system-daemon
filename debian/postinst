@@ -11,25 +11,30 @@ case "$1" in
           adduser --quiet ros dialout
           # FIXME: remove user on uninstall
         fi
-	if ! getent group ros > /dev/null 2>&1; then
-		addgroup --system ros --quiet
-	fi
+        if ! getent group ros > /dev/null 2>&1; then
+            addgroup --system ros --quiet
+        fi
 
-	if [ ! -e "/var/lib/ros" ]; then
-		mkdir /var/lib/ros
-	fi
-	chown -R ros:ros /var/lib/ros
+        if [ ! -e "/var/lib/ros" ]; then
+            mkdir /var/lib/ros
+        fi
+        chown -R ros:ros /var/lib/ros
         chmod 2775 /var/lib/ros
 
-	if [ ! -e "/var/log/ros" ]; then
-		mkdir /var/log/ros
-	fi
-	chown -R ros:ros /var/log/ros
+        if [ ! -e "/var/log/ros" ]; then
+            mkdir /var/log/ros
+        fi
+        chown -R ros:ros /var/log/ros
         chmod 2775 /var/log/ros
 
-	if [ "$(id -gn ros)" = "nogroup" ]; then
-		usermod -g ros ros
-    	fi
+        if [ "$(id -gn ros)" = "nogroup" ]; then
+            usermod -g ros ros
+        fi
+
+        # Not expected to fail, as we have a dependency on ros-XXXX-ros-base
+        ROS_DISTRO=`ls /opt/ros | tail -1`
+        update-alternatives --install /etc/ros/setup.bash ros-setup /opt/ros/$ROS_DISTRO/setup.bash 1
+        update-alternatives --install /etc/ros/robot.launch ros-robot-launch /usr/share/ros/default.launch 1
     ;;
 
     *)
