@@ -49,8 +49,8 @@ if [ -f $ROS_ENVVARS ]; then
   . $ROS_ENVVARS
 fi
 
-# Query info about a currently-running master
-RUNNING_ROSMASTER_PID=`pgrep rosmaster | head -1`
+# Query info about a currently-running master on our selected port.
+RUNNING_ROSMASTER_PID=`lsof -t -i :${ROS_PORT} | head -n 1`
 if ! [ -z $RUNNING_ROSMASTER_PID ]; then
   RUNNING_ROSCORE_PID=`grep ^PPid "/proc/${RUNNING_ROSMASTER_PID}/status" | cut -f 2`
   RUNNING_ROSCORE_USER=`ps -p $RUNNING_ROSCORE_PID --no-headers -o user`
@@ -118,8 +118,18 @@ rosctl_stop () {
     if [ -z $RUNNING_ROSCORE_PID ] ; then
         logger -s -p user.err "Unable to stop ROS - roscore is not running"
     elif [ $RUNNING_ROSCORE_USER = $USER ] || [ "$USER" = "root" ] ; then
-        kill $RUNNING_ROSCORE_PID
+        kill -TERM $RUNNING_ROSCORE_PID
         logger -s "Sent SIGTERM to roscore ($RUNNING_ROSCORE_PID)"
+        echo "Waiting for roscore to stop"
+        WAIT=10
+        while ps -p $RUNNING_ROSCORE_PID; do
+            sleep 1
+            let WAIT=WAIT-1
+            if [ $WAIT == 0 ]; then
+                logger -s -p user.err "Sent SIGTERM, roscore ($RUNNING_ROSCORE_PID) may still be running" 
+                exit 1
+            fi
+        done
     else 
         logger -s -p user.err "Unable to stop ROS - roscore ($RUNNING_ROSCORE_PID) running as $RUNNING_ROSCORE_USER"
     fi
@@ -127,9 +137,11 @@ rosctl_stop () {
 
 rosctl_restart () {
     rosctl_stop
-    sleep 1
-    rosctl_check_roscore
-    rosctl_start
+    if [ $? == 0 ]; then
+        rosctl_start
+    else
+        logger -s -p user.err "ROS not stopped, unable to restart"
+    fi
 }
 
 rosctl_status () {
