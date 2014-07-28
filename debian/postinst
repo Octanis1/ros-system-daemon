@@ -33,7 +33,7 @@ case "$1" in
 
         # Not expected to fail, as we have a dependency on ros-XXXX-ros-base
         ROS_DISTRO=`ls /opt/ros | tail -1`
-        update-alternatives --install /etc/ros/setup.bash ros-setup /opt/ros/$ROS_DISTRO/setup.bash 1
+        update-alternatives --install /etc/ros/setup.sh ros-setup /opt/ros/$ROS_DISTRO/setup.sh 1
         update-alternatives --install /etc/ros/robot.launch ros-robot-launch /usr/share/ros/default.launch 1
     ;;
 
