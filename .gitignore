@@ -1,0 +1,6 @@
+debian/ros-system-daemon.debhelper.log
+debian/ros-system-daemon.postinst.debhelper
+debian/ros-system-daemon.preinst.debhelper
+debian/ros-system-daemon.prerm.debhelper
+debian/ros-system-daemon.substvars
+debian/ros-system-daemon

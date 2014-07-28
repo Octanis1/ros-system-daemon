@@ -1,0 +1,8 @@
+language: cpp
+install:
+  - sudo apt-get update
+  - sudo apt-get install dpkg-dev cdbs debhelper
+script:
+  - dpkg-buildpackage -us -uc
+after_success:
+  - dpkg -c ../*.deb
