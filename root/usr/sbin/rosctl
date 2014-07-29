@@ -62,11 +62,7 @@ if [ ! -s "${ROS_SETUP}" ]; then
   exit 1
 fi
 
-ROS_SETUP_LINK_TARGET=$(readlink -f "${ROS_SETUP}")
-logger -s "rosctl sourcing ${ROS_SETUP} -> ${ROS_SETUP_LINK_TARGET}"
-
 source "${ROS_SETUP}"
-
 
 rosctl_usage () {
     echo "Usage: $0 start|stop|restart|status"
@@ -88,6 +84,9 @@ rosctl_notify () {
 }
 
 rosctl_start () {
+    ROS_SETUP_LINK_TARGET=$(readlink -f "${ROS_SETUP}")
+    logger -s "rosctl sourcing ${ROS_SETUP} -> ${ROS_SETUP_LINK_TARGET}"
+
     if ! [ -z $RUNNING_ROSCORE_PID ]; then
         logger -s -p user.err "Unable to start ROS - roscore ($RUNNING_ROSCORE_PID) already running as $RUNNING_ROSCORE_USER"
         exit 1
@@ -98,18 +97,18 @@ rosctl_start () {
 
     rosctl_notify "Starting robot as $USER"
     if [ "$USER" = "root" ]; then
-        logger -s -p info.err "rosctl can not currently be run as root"
-    elif [ "$USER" = "ros" ]; then
-        export ROS_LOG_DIR=/var/log/ros
+        logger -s -p user.err "rosctl cannot currently be run as root"
+        return 1
+    fi
+
+    if [ "$USER" = "ros" ]; then
         logger -s "Starting ROS system daemon"
-        nohup roslaunch --pid=/var/run/${ROS_PID_FILENAME} \
-            --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros.log &
+        export ROS_LOG_DIR=/var/log/ros
     else
         logger -s "Starting ROS as user $USER"
         mkdir -p ${HOME}/.ros
-        nohup roslaunch  --pid=${HOME}/.ros/${ROS_PID} \
-            --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros.log &
     fi
+    nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros.log &
 }
 
 rosctl_stop () {
@@ -121,7 +120,7 @@ rosctl_stop () {
         logger -s "Sent SIGTERM to roscore ($RUNNING_ROSCORE_PID)"
         echo "Waiting for roscore to stop"
         WAIT=10
-        while ps -p $RUNNING_ROSCORE_PID; do
+        while ps -p $RUNNING_ROSCORE_PID >& /dev/null; do
             sleep 1
             let WAIT=WAIT-1
             if [ $WAIT == 0 ]; then
@@ -129,6 +128,7 @@ rosctl_stop () {
                 exit 1
             fi
         done
+        logger -s "roscore process stopped"
     else 
         logger -s -p user.err "Unable to stop ROS - roscore ($RUNNING_ROSCORE_PID) running as $RUNNING_ROSCORE_USER"
     fi
