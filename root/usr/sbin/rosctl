@@ -38,7 +38,7 @@
 DATE=`date`
 NOTIFY_USER=`ps -C gnome-session --no-headers -o user | head -1`
 USER=`id -un`
-ROS_SETUP=/etc/ros/setup.bash
+ROS_SETUP=/etc/ros/setup.sh
 ROS_PORT=11311
 ROS_PID_FILENAME=roscore-$ROS_PORT.pid
 ROBOT_LAUNCH=/etc/ros/robot.launch
@@ -58,7 +58,7 @@ fi
 
 # Find our ROS environment setup file
 if [ ! -s "${ROS_SETUP}" ]; then
-  logger -s -p user.err "rosctl cannot find ${ROS_SETUP}, unable to launch."
+  logger -s -p user.err "rosctl cannot find ${ROS_SETUP}, unable to proceed"
   exit 1
 fi
 
@@ -97,7 +97,6 @@ rosctl_start () {
     logger -s "Using ROS_HOSTNAME=${ROS_HOSTNAME}"
 
     rosctl_notify "Starting robot as $USER"
-    logger -s "Starting robot as $USER"
     if [ "$USER" = "root" ]; then
         logger -s -p info.err "rosctl can not currently be run as root"
     elif [ "$USER" = "ros" ]; then
