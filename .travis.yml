@@ -1,8 +1,12 @@
 language: cpp
-install:
-  - sudo apt-get update
-  - sudo apt-get install dpkg-dev cdbs debhelper
-script:
-  - dpkg-buildpackage -us -uc
-after_success:
-  - dpkg -c ../*.deb
+env: 
+  global: 
+    secure: N8NucabA8q/TN2BiEfT/BO8cqq0ZCGoHujYtX6VbAfWSGByGeNqkLCa/nH0Q6pUsI/rFaFVoetS5H3ZS+/XILk/n7/mz53KGP0+F3bjZqLWgwXveCxGAO0Cau5FEzl2IzwQs1UDZHq+OcVrrkS3vxZE468JA7CVLQTNMB6KmbW8=
+install: 
+- sudo apt-get update
+- sudo apt-get install dpkg-dev cdbs debhelper
+script: 
+- dpkg-buildpackage -us -uc
+after_success: 
+- dpkg -c ../*.deb
+- ./upload_to_bintray

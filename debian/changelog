@@ -1,6 +1,11 @@
 ros-system-daemon (0.1.0) precise; urgency=low
 
-  * Overhaul
+  * Simplify and streamline rosctl.
+  * Find running roscore by port lookup.
+  * Wait until process has ended before restarting.
+  * Use update-alternatives to manage setup and launch.
+  * Eliminate writing PID file.
+  * Bintray deployment.
 
  -- Mike Purvis <mpurvis@clearpathrobotics.com>  Mon, 28 Jul 2014 00:00:00 -0500
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Only deploy tagged releases
+if [[ -z "$TRAVIS_TAG" ]]; then
+  echo "Not on a tag, deploying nothing."
+  exit 0
+fi
+
+echo "Deploying version ${TRAVIS_TAG} to bintray."
+curl -T ../ros-system-daemon_${TRAVIS_TAG}_all.deb \
+     -umikepurvis:${BINTRAY_API_KEY} \
+     https://api.bintray.com/content/ros/ros/ros-system-daemon/${TRAVIS_TAG}/ros-system-daemon_${TRAVIS_TAG}-${TRAVIS_BUILD_NUMBER}_all.deb
