@@ -89,7 +89,9 @@ rosctl_start () {
         logger -s -p user.err "Unable to start ROS - roscore ($RUNNING_ROSCORE_PID) already running as $RUNNING_ROSCORE_USER"
         exit 1
     fi
-    ROS_HOSTNAME=${HOSTNAME}
+    if [ -z "${ROS_HOSTNAME}" ]; then
+        ROS_HOSTNAME=${HOSTNAME}
+    fi
     logger -s "Using ROS_HOSTNAME=${ROS_HOSTNAME}"
 
     rosctl_notify "Starting robot as $USER"
