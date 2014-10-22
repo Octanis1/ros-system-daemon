@@ -107,7 +107,7 @@ rosctl_start () {
         logger -s "Starting ROS as user $USER"
         mkdir -p ${HOME}/.ros
     fi
-    nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros.log &
+    nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros-`date +%s`.log &
 }
 
 rosctl_stop () {
