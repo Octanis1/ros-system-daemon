@@ -25,10 +25,20 @@ Startup and shutdown is controlled by an upstart job. By default, ROS is launche
     roslaunch /etc/ros/robot.launch
     
 The files `/etc/ros/setup.sh` and `/etc/ros/robot.launch` are symlinks controlled by update-alternatives.
-You can cleanly change them like so:
+You can load setup scripts and launchers like so:
 
     update-alternatives --install /etc/ros/setup.sh ros-setup ${HOME}/my_catkin_ws/devel/setup.sh 20
     update-alternatives --install /etc/ros/robot.launch ros-robot-launch ${HOME}/my_robot.launch 20
+
+You can view what scripts and launchers are available with:
+
+    update-alternatives --list ros-setup
+    update-alternatives --list ros-robot-launch
+
+And change the currently selected alternave with:
+
+    update-alternatives --config ros-setup
+    update-alternatives --config ros-robot-launch
 
 ## System-wide Logging
 `ROS_LOG_DIR=/var/log/ros` for the background daemon job. This path is owned by the ros user and group.
