@@ -71,13 +71,11 @@ rosctl_usage () {
 }
 
 rosctl_notify () {
-    if ! [ -z $NOTIFY_USER ]; then
-        if [ "$NOTIFY_USER" = "$USER" ]; then
-          if [ -z $DISPLAY ]; then
+    if hash notify-send 2>/dev/null; then
+        if [ -z $DISPLAY ]; then
             DISPLAY=:0
-          fi
-     	  /usr/bin/notify-send --urgency=normal --expire-time=1000 --icon=ros --category='network.connected' '<b>ROS</b>' "$@"
         fi
+     	/usr/bin/notify-send --urgency=normal --expire-time=1000 --icon=ros --category='network.connected' '<b>ROS</b>' "$@"
     else
         echo "Notify disabled"
     fi
@@ -91,8 +89,9 @@ rosctl_start () {
         logger -s -p user.err "Unable to start ROS - roscore ($RUNNING_ROSCORE_PID) already running as $RUNNING_ROSCORE_USER"
         exit 1
     fi
-
-    ROS_HOSTNAME=${HOSTNAME}
+    if [ -z "${ROS_HOSTNAME}" ]; then
+        ROS_HOSTNAME=${HOSTNAME}
+    fi
     logger -s "Using ROS_HOSTNAME=${ROS_HOSTNAME}"
 
     rosctl_notify "Starting robot as $USER"
@@ -108,7 +107,7 @@ rosctl_start () {
         logger -s "Starting ROS as user $USER"
         mkdir -p ${HOME}/.ros
     fi
-    nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros.log &
+    nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros-`date +%s`.log &
 }
 
 rosctl_stop () {
