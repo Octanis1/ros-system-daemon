@@ -17,7 +17,16 @@ for re-launching the daemon job as your own user.
     ROS PID:            /var/run/ros/roscore.pid
 
 ## Startup and shutdown
-Startup and shutdown is controlled by an upstart job. By default, ROS is launched as user `ros` with the following setup:
+Startup and shutdown is controlled by an upstart job. 
+
+    sudo service start ros
+    sudo service stop ros
+
+You can disable start on boot by:
+
+    echo manual | sudo tee /etc/init/ros.override
+
+When the service is started, the default configuration is to launch ROS as user `ros` with the following setup:
 
     source /etc/ros/setup.sh
     source /etc/ros/envvars
