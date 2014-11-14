@@ -100,12 +100,12 @@ rosctl_start () {
         return 1
     fi
 
+    mkdir -p ${HOME}/.ros
     if [ "$USER" = "ros" ]; then
         logger -s "Starting ROS system daemon"
         export ROS_LOG_DIR=/var/log/ros
     else
         logger -s "Starting ROS as user $USER"
-        mkdir -p ${HOME}/.ros
     fi
     nohup roslaunch  --port=${ROS_PORT} ${ROBOT_LAUNCH} >& /tmp/ros-`date +%s`.log &
 }
