@@ -1,3 +1,12 @@
+ros-system-daemon (0.1.1) trusty; urgency=low
+
+  * Fixes conflicts on /tmp/ros.log from usage by different users.
+  * Use existing ROS_HOSTNAME if already set.
+  * Check to see if a suitable notification method is available.
+  * Create the ros home directory always, even for ros user.
+
+ -- Daniel Stonier <d.stonier@gmail.com>  Fri, 14 Nov 2014 14:21:18 +0900
+
 ros-system-daemon (0.1.0) precise; urgency=low
 
   * Simplify and streamline rosctl.
